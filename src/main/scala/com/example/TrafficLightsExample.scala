@@ -1,27 +1,23 @@
 //#full-example
 package com.example
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.{Actor, ActorRef, Props}
 
 object TrafficLightsExample extends App {
 
   case object Start
   case class Message(colour: String)
 
-  object Light {
-    def apply(duration: Int, colour: String): Light = new Light(duration, colour)
+  object TrafficLightActor {
+    def apply(duration: Int, colour: String): TrafficLightActor = new TrafficLightActor(duration, colour)
   }
 
-  object RedLight extends Light(4000, "Red")
-  object YellowLight extends Light(1000, "Yellow")
-  object GreenLight extends Light(3000, "Green")
-
-  val system: ActorSystem = ActorSystem("TrafficLights")
   val RedLightActor: ActorRef = TrafficLightsFactory.RedLightActor
   val YellowLightActor: ActorRef = TrafficLightsFactory.YellowLightActor
   val GreenLightActor: ActorRef = TrafficLightsFactory.GreenLightActor
 
-  class Light(duration: Int, colour: String) extends Actor {
+
+  class TrafficLightActor(duration: Int, colour: String) extends Actor {
 
     def receive = {
       case Start if colour=="Red"  => {
@@ -45,8 +41,9 @@ object TrafficLightsExample extends App {
           RedLightActor ! Message("Red")
         }
       }
+
+    def props: Props = Props[TrafficLightActor]
     }
-    def props: Props = Props[Light]
 
   RedLightActor ! Start
 
