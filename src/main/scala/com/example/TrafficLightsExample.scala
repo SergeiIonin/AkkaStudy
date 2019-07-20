@@ -32,7 +32,7 @@ object TrafficLightsExample extends App {
         case Message("Red") => {
           println("RED")
           Thread.sleep(duration)
-          YellowLightActor ! Message("Yellow") //MessageFromRedLight
+          YellowLightActor ! Message("Yellow")
         }
         case Message("Yellow") => {
           println("YELLOW")
