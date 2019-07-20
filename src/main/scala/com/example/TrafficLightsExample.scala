@@ -7,7 +7,6 @@ object TrafficLightsExample extends App {
 
   case object Start
   case class Message(colour: String)
-  case object Message
 
   object Light {
     def apply(duration: Int, colour: String): Light = new Light(duration, colour)
