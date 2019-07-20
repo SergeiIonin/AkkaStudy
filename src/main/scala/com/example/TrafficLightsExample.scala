@@ -4,16 +4,16 @@ package com.example
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 
 object TrafficLightsExample extends App {
-  case object MessageFromRedLight
-  case object MessageFromYellowLight
-  case object MessageFromGreenLight
+
   case object Start
+  case class Message(colour: String)
+  case object Message
 
   object Light {
     def apply(duration: Int, colour: String): Light = new Light(duration, colour)
   }
 
-  object RedLight extends Light(5000, "Red")
+  object RedLight extends Light(4000, "Red")
   object YellowLight extends Light(1000, "Yellow")
   object GreenLight extends Light(3000, "Green")
 
@@ -23,32 +23,32 @@ object TrafficLightsExample extends App {
   val GreenLightActor: ActorRef = TrafficLightsFactory.GreenLightActor
 
   class Light(duration: Int, colour: String) extends Actor {
+
     def receive = {
-      case Start if colour=="Red" => {
+      case Start if colour=="Red"  => {
         println("RED")
         Thread.sleep(duration)
-        YellowLightActor ! MessageFromRedLight
+        YellowLightActor ! Message("Yellow")
       }
-      case MessageFromGreenLight if colour == "Red" => {
-        println("RED")
-        Thread.sleep(duration)
-        YellowLightActor ! MessageFromRedLight
-      }
-      case MessageFromRedLight if colour == "Yellow" => {
-        println("YELLOW")
-        Thread.sleep(duration)
-        GreenLightActor ! MessageFromYellowLight
-      }
-      case MessageFromYellowLight if colour == "Green" => {
-        println("GREEN")
-        Thread.sleep(duration)
-        RedLightActor ! MessageFromGreenLight
+        case Message("Red") => {
+          println("RED")
+          Thread.sleep(duration)
+          YellowLightActor ! Message("Yellow") //MessageFromRedLight
+        }
+        case Message("Yellow") => {
+          println("YELLOW")
+          Thread.sleep(duration)
+          GreenLightActor ! Message("Green")
+        }
+        case Message("Green") => {
+          println("GREEN")
+          Thread.sleep(duration)
+          RedLightActor ! Message("Red")
+        }
       }
     }
     def props: Props = Props[Light]
-  }
 
   RedLightActor ! Start
-
 
 }
